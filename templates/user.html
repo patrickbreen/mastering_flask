@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}User: {{ user.username }}{% endblock %}
+
+
+
+{% block body %}
+<h3>{{ user.username }}'s Posts:</h3>
+<hr>
+{% for post in posts.items %}
+  <p>title: <a href="{{ url_for('post', post_id=post.id) }}">
+    {{ post.title }}
+  </a></p>
+  <p>tags: 
+  {% for tag in post.tags %}
+    <a href="{{ url_for('tag', tag_name=tag.title) }}">
+      #{{ tag.title }} 
+    </a>
+{% endfor %}
+</p>
+<hr>
+{% endfor %}
+{{ render_pagination(posts, 'user', username=user.username) }}
+
+<h3>New Post For {{ user.username }}:</h3>
+<p> put a link to a form here </p>
+<hr>
+<h3>New User:</h3>
+<form method="POST" action="{{ url_for('user', username="default") }}">
+  {{ form.hidden_tag() }}
+  <div class="form-group">
+    {{ form.username.label }}
+    {% if form.username.errors %}
+      {% for e in form.username.errors %}
+        <p class="help-block">{{ e }}</p>
+      {% endfor %}
+    {% endif %}
+    {{ form.username(class_='form-control') }}
+  </div>
+  <div class="form-group">
+    {{ form.password.label }}
+    {% if form.password.errors %}
+      {% for e in form.password.errors %}
+        <p class="help-block">{{ e }}</p>
+      {% endfor %}
+    {% endif %}
+    {{ form.password(class_='form-control') }}
+  </div>
+  <input class="btn btn-primary" type="submit" value="Add User">
+</form>
+{% endblock %}

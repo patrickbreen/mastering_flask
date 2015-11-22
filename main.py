@@ -1,12 +1,35 @@
-from flask import Flask, render_template
+import datetime
+
+from flask import Flask, render_template, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import func
+from flask_wtf import Form
+from wtforms import StringField, TextAreaField
+from wtforms.validators import DataRequired, Length
 
 from config import DevConfig
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
 db = SQLAlchemy(app)
+
+class UserForm(Form):
+  username = StringField(
+        'Name',
+        validators=[DataRequired(), Length(max=255)]
+      )
+  password = StringField(
+      'Password',
+      validators=[DataRequired(), Length(max=225)]
+      )
+
+class CommentForm(Form):
+  name = StringField(
+        'Name',
+        validators=[DataRequired(), Length(max=255)]
+      )
+  text = TextAreaField(u'Comment', validators=[DataRequired()])
+
 
 
 class User(db.Model):
@@ -19,6 +42,7 @@ class User(db.Model):
         lazy='dynamic'
     )
 
+# make intermediate join table
 tags = db.Table('post_tags',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
@@ -81,25 +105,45 @@ def home(page=1):
         top_tags=top_tags
      )
 
-@app.route('/post/<int:post_id>')
-def post(post_id):
+@app.route('/post/<int:post_id>', methods=('GET', 'POST'))
+@app.route('/post/<int:post_id>/<int:page>', methods=('GET', 'POST'))
+def post(post_id, page=1):
+    form = CommentForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            comment = Comment()
+            comment.name = form.name.data
+            comment.text = form.text.data
+            comment.post_id = post_id
+            comment.date = datetime.datetime.now()
+
+            db.session.add(comment)
+            db.session.commit()
+            return redirect(url_for('post', post_id=post_id))
+
     post = Post.query.get_or_404(post_id)
     tags = post.tags
-    comments = post.comments.order_by(Comment.data.desc()).all()
+
+    comments = post.comments.order_by(Comment.date.desc()
+        ).paginate(page, 10)
     recent, top_tags = sidebar_data()
+
     return render_template(
         'post.html',
         post=post,
         tags=tags,
         comments=comments,
         recent=recent,
-        top_tags=top_tags
+        top_tags=top_tags,
+        form=form
     )
 
 @app.route('/tag/<string:tag_name>')
-def tag(tag_name):
-    tag = Tag.query.filter_by(title-tag_name).first_or_404()
-    posts = tag.posts.order_by(Post.publish_date.desc()).all()
+@app.route('/tag/<string:tag_name>/<int:page>')
+def tag(tag_name, page=1):
+    tag = Tag.query.filter_by(title=tag_name).first_or_404()
+    posts = tag.posts.order_by(Post.publish_date.desc()
+        ).paginate(page, 10)
     recent, top_tags = sidebar_data()
     return render_template(
         'tag.html',
@@ -109,17 +153,33 @@ def tag(tag_name):
         top_tags=top_tags
     )
 
-@app.route('/user/<string:username>')
-def user(username):
+@app.route('/user/<string:username>', methods=['GET', 'POST'])
+@app.route('/user/<string:username>/<int:page>', methods=['GET', 'POST'])
+def user(username, page=1):
+    form = UserForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = User()
+            user.username = form.username.data
+            user.password = form.password.data
+
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('user', username=user.username))
+
     user = User.query.filter_by(username=username).first_or_404()
-    posts = user.posts.order_by(Post.publish_date.desc()).all()
+    posts = user.posts.order_by(
+        Post.publish_date.desc()
+        ).paginate(page, 10)
+
     recent, top_tags = sidebar_data()
     return render_template(
         'user.html',
         user=user,
         posts=posts,
         recent=recent,
-        top_tags=top_tags
+        top_tags=top_tags,
+        form=form
     )
 
 

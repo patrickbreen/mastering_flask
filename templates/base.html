@@ -1,16 +1,11 @@
 {% macro render_pagination(pagination, endpoint) %}
 <nav>
   <ul class="pagination">
-    <li>
-    <a href="{{ url_for('home', page=pagination.prev().page) }}" aria-label="Previous">
-      <span aria-hidden="true">&laquo;</span>
-    </a>
-    </li>
     {% for page in pagination.iter_pages() %}
       {% if page %}
         {% if page != pagination.page %}
           <li>
-            <a href="{{ url_for(endpoint, page=page) }}">
+            <a href="{{ url_for(endpoint, page=page, **kwargs) }}">
               {{ page }}
             </a>
           </li>
@@ -21,11 +16,6 @@
         <li><a>...</a></li>
       {% endif %}
     {% endfor %}
-    <li>
-      <a href="{{ url_for('home', page=pagination.next().page) }}" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
   </ul>
 </nav>
 {% endmacro %}
@@ -48,8 +38,35 @@
       <h1><a href={{ url_for('home') }}>My Blog</a></h1>
       <p>Welcome to the blog!</p>
     </div>
-    {% block body %}
-    {% endblock %}
+
+<div class="row">
+  <div class="col-sm-9">
+  {% block body %}
+  {% endblock %}
+  </div>
+  <div class="col-sm-3">
+    <div class="row">
+      <h5>Recent Posts</h5>
+      <ul>
+        {% for post in recent %}
+        <li><a href="{{
+          url_for('post', post_id=post.id)
+          }}">{{ post.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="row">
+      <h5>Popular Tags</h5>
+      <ul>
+        {% for tag in top_tags %}
+        <li><a href="{{ url_for('tag', tag_name=tag[0].title) }}">
+          {{ tag[0].title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
   </div>
 
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
