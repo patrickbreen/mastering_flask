@@ -1,6 +1,7 @@
 import datetime
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, \
+                  url_for, request, Blueprint
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask_wtf import Form
@@ -13,6 +14,7 @@ app = Flask(__name__)
 app.config.from_object(DevConfig)
 db = SQLAlchemy(app)
 
+# the 'models':
 class UserForm(Form):
   username = StringField(
         'Name',
@@ -80,6 +82,15 @@ class Comment(db.Model):
   post_id = db.Column(db.Integer(),
       db.ForeignKey('post.id'))
 
+
+# the view/controller functions
+blog_blueprint = Blueprint(
+        'blog',
+        __name__,
+        template_folder='templates/blog',
+        url_prefix='/blog'
+        )
+
 def sidebar_data():
     recent = Post.query.order_by(
         Post.publish_date.desc()).limit(5).all()
@@ -90,9 +101,13 @@ def sidebar_data():
         ).group_by(Tag).order_by('total DESC').limit(5).all()
     return recent, top_tags
 
-
 @app.route('/')
-@app.route('/<int:page>')
+def index():
+    return redirect(url_for('blog.home'))
+
+
+@blog_blueprint.route('/')
+@blog_blueprint.route('/<int:page>')
 def home(page=1):
     posts = Post.query.order_by(
         Post.publish_date.desc()
@@ -105,8 +120,8 @@ def home(page=1):
         top_tags=top_tags
      )
 
-@app.route('/post/<int:post_id>', methods=('GET', 'POST'))
-@app.route('/post/<int:post_id>/<int:page>', methods=('GET', 'POST'))
+@blog_blueprint.route('/post/<int:post_id>', methods=('GET', 'POST'))
+@blog_blueprint.route('/post/<int:post_id>/<int:page>', methods=('GET', 'POST'))
 def post(post_id, page=1):
     form = CommentForm()
     if request.method == 'POST':
@@ -138,8 +153,8 @@ def post(post_id, page=1):
         form=form
     )
 
-@app.route('/tag/<string:tag_name>')
-@app.route('/tag/<string:tag_name>/<int:page>')
+@blog_blueprint.route('/tag/<string:tag_name>')
+@blog_blueprint.route('/tag/<string:tag_name>/<int:page>')
 def tag(tag_name, page=1):
     tag = Tag.query.filter_by(title=tag_name).first_or_404()
     posts = tag.posts.order_by(Post.publish_date.desc()
@@ -153,8 +168,8 @@ def tag(tag_name, page=1):
         top_tags=top_tags
     )
 
-@app.route('/user/<string:username>', methods=['GET', 'POST'])
-@app.route('/user/<string:username>/<int:page>', methods=['GET', 'POST'])
+@blog_blueprint.route('/user/<string:username>', methods=['GET', 'POST'])
+@blog_blueprint.route('/user/<string:username>/<int:page>', methods=['GET', 'POST'])
 def user(username, page=1):
     form = UserForm()
     if request.method == 'POST':
@@ -184,4 +199,5 @@ def user(username, page=1):
 
 
 if __name__ == '__main__':
+    app.register_blueprint(blog_blueprint)
     app.run(debug=True)

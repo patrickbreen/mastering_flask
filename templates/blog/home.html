@@ -13,9 +13,9 @@
     <div class="row">
       <div class="col-sm-12">
         {{ post.text | truncate(255) | safe }}
-        <a href="{{ url_for('post', post_id=post.id) }}">Read More</a>
+        <a href="{{ url_for('.post', post_id=post.id) }}">Read More</a>
       </div>
     </div>
     {% endfor %}
-{{ render_pagination(posts, 'home') }}
+{{ render_pagination(posts, '.home') }}
 {% endblock %}
