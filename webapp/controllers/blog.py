@@ -1,93 +1,15 @@
 import datetime
 
-from flask import Flask, render_template, redirect, \
-                  url_for, request, Blueprint
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask import render_template, redirect, url_for, request, Blueprint
 from sqlalchemy import func
-from flask_wtf import Form
-from wtforms import StringField, TextAreaField
-from wtforms.validators import DataRequired, Length
 
-from config import DevConfig
+from webapp.models import db, Post, Tag, Comment, User, Tag, tags
+from webapp.forms import CommentForm, UserForm
 
-app = Flask(__name__)
-app.config.from_object(DevConfig)
-db = SQLAlchemy(app)
-
-# the 'models':
-class UserForm(Form):
-  username = StringField(
-        'Name',
-        validators=[DataRequired(), Length(max=255)]
-      )
-  password = StringField(
-      'Password',
-      validators=[DataRequired(), Length(max=225)]
-      )
-
-class CommentForm(Form):
-  name = StringField(
-        'Name',
-        validators=[DataRequired(), Length(max=255)]
-      )
-  text = TextAreaField(u'Comment', validators=[DataRequired()])
-
-
-
-class User(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    username = db.Column(db.String(255))
-    password = db.Column(db.String(255))
-    posts = db.relationship(
-        'Post',
-        backref='user',
-        lazy='dynamic'
-    )
-
-# make intermediate join table
-tags = db.Table('post_tags',
-    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-    )
-
-
-class Post(db.Model):
-  id = db.Column(db.Integer(), primary_key=True)
-  title = db.Column(db.String(255))
-  text = db.Column(db.Text())
-  publish_date = db.Column(db.DateTime())
-  comments = db.relationship(
-      'Comment',
-      backref='post',
-      lazy='dynamic'
-  )
-  user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-  tags = db.relationship(
-      'Tag',
-      secondary=tags,
-      backref=db.backref('posts', lazy='dynamic')
-  )
-
-
-class Tag(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  title = db.Column(db.String(255))
-
-
-class Comment(db.Model):
-  id = db.Column(db.Integer(), primary_key=True)
-  name = db.Column(db.String(255))
-  text = db.Column(db.Text())
-  date = db.Column(db.DateTime())
-  post_id = db.Column(db.Integer(),
-      db.ForeignKey('post.id'))
-
-
-# the view/controller functions
 blog_blueprint = Blueprint(
         'blog',
         __name__,
-        template_folder='templates/blog',
+        template_folder='../templates/blog',
         url_prefix='/blog'
         )
 
@@ -100,11 +22,6 @@ def sidebar_data():
             tags
         ).group_by(Tag).order_by('total DESC').limit(5).all()
     return recent, top_tags
-
-@app.route('/')
-def index():
-    return redirect(url_for('blog.home'))
-
 
 @blog_blueprint.route('/')
 @blog_blueprint.route('/<int:page>')
@@ -198,6 +115,3 @@ def user(username, page=1):
     )
 
 
-if __name__ == '__main__':
-    app.register_blueprint(blog_blueprint)
-    app.run(debug=True)

@@ -1,11 +1,7 @@
 import random
 import datetime
-
-from webapp.models import db, User, Post, Tag, Comment
-from webapp import app
-
-ctx = app.app_context()
-ctx.push()
+from webapp import app, db
+from webapp.models import User, Post, Tag, Comment
 
 user = User(username="jim", password="jim")
 db.session.add(user)
@@ -27,4 +23,3 @@ for i in range(100):
     db.session.add(new_post)
 
 db.session.commit()
-ctx.pop()
