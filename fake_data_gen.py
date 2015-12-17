@@ -7,8 +7,11 @@ from webapp import app
 ctx = app.app_context()
 ctx.push()
 
-user = User(username="jim", password="jim")
+user = User()
+user.username = 'jim'
+user.set_password('jim')
 db.session.add(user)
+db.session.commit()
 
 tag_one = Tag(title='Python')
 tag_two = Tag(title='Flask')

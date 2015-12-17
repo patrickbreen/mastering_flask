@@ -21,8 +21,6 @@
 {% endmacro %}
 
 
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,41 +33,57 @@
 <body>
   <div class="container">
     <div class="jumbotron">
-      <h1><a href={{ url_for('.home') }}>My Blog</a></h1>
+      <h1><a href={{ url_for('blog.home') }}>My Blog</a></h1>
       <p>Welcome to the blog!</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible"
+                role="alert">
+                <button type="button" class="close" 
+                    data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
+    <div class="row">
+      <div class="col-sm-9">
 
-<div class="row">
-  <div class="col-sm-9">
-  {% block body %}
-  {% endblock %}
-  </div>
-  <div class="col-sm-3">
-    <div class="row">
-      <h5>Recent Posts</h5>
-      <ul>
-        {% for post in recent %}
-        <li><a href="{{
-          url_for('.post', post_id=post.id)
-          }}">{{ post.title }}</a></li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="row">
-      <h5>Popular Tags</h5>
-      <ul>
-        {% for tag in top_tags %}
-        <li><a href="{{ url_for('.tag', tag_name=tag[0].title) }}">
+      {% block body %}
+      {% endblock %}
+      </div>
+      <div class="col-sm-3">
+        <div class="row">
+          <h5>Recent Posts</h5>
+          <ul>
+            {% for post in recent %}
+            <li><a href="{{
+              url_for('blog.post', post_id=post.id)
+              }}">{{ post.title }}</a></li>
+            {% endfor %}
+          </ul>
+      </div>
+      <div class="row">
+        <h5>Popular Tags</h5>
+        <ul>
+          {% for tag in top_tags %}
+          <li><a href="{{ url_for('blog.tag', tag_name=tag[0].title) }}">
           {{ tag[0].title }}</a></li>
-        {% endfor %}
-      </ul>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-  </div>
-
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}">
+</script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
+</script>
+  {% block js %}
+  {% endblock %}
 </body>
 </html>
