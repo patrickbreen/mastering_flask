@@ -4,7 +4,7 @@ from webapp.config import DevConfig
 from webapp.models import db
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.blog import blog_blueprint
-from webapp.extensions import bcrypt
+from webapp.extensions import bcrypt, login_manager
 
 def create_app(object_name):
     app = Flask(__name__)
@@ -12,6 +12,7 @@ def create_app(object_name):
 
     db.init_app(app)
     bcrypt.init_app(app)
+    login_manager.init_app(app)
     return app
 
 app = create_app(DevConfig)

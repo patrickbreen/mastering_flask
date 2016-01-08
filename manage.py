@@ -29,6 +29,13 @@ def create_db():
 @manager.command
 def populate():
     "populate with default data"
+
+    # populate roles
+    db.session.add(Role('admin'))
+    db.session.add(Role('poster'))
+    db.session.add(Role('default'))
+    db.session.commit()
+
     user = User()
     user.username = 'jim'
     user.set_password('jim')

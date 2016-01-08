@@ -12,11 +12,17 @@
         <p class="help-block">{{ e }}</p>
         {% endfor %}
     {% endif %}
-    {{ form.text(id="editor", class_='form-control') }}
+    {{ form.title(class_='form-control') }}
+    </div>
+    <div class="form-group">
+    {{ form.text.label }}
+    {{ form.text(id="editor", class_='form-control',
+    value='') }}
     </div>
     <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 </div>
+{% endblock %}
 
 {% block js %}
 <script src = "//cdn.ckeditor.com/4.4.7/standard/ckeditor.js">

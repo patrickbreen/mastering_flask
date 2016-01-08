@@ -6,13 +6,13 @@
 <h3>#{{ tag.title }}</h3>
 <hr>
 {% for post in posts.items %}
-  <p>title: <a href="{{ url_for('.post', post_id=post.id) }}">
+  <p>title: <a href="{{ url_for('blog.post', post_id=post.id) }}">
     {{ post.title }}
   </a></p>
-  <p>author: <a href="{{ url_for('.user', username=post.user.username) }}">
+  <p>author: <a href="{{ url_for('blog.user', username=post.user.username) }}">
     {{ post.user.username }}
   </a></p>
   <hr>
 {% endfor %}
-{{ render_pagination(posts, '.tag', tag_name=tag.title) }}
+{{ render_pagination(posts, 'blog.tag', tag_name=tag.title) }}
 {% endblock %}

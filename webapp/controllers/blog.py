@@ -30,12 +30,14 @@ def new_post():
     form = PostForm()
 
     if form.validate_on_submit():
-        new_post = Post(form.title.data)
+        new_post = Post()
+        new_post.title = form.title.data
         new_post.text = form.text.data
         new_post.publish_date = datetime.datetime.now()
 
         db.session.add(new_post)
         db.session.commit()
+        return redirect(url_for('blog.post', post_id=new_post.id))
 
     recent, top_tags = sidebar_data()
     return render_template('new.html',
@@ -94,7 +96,7 @@ def post(post_id, page=1):
 
             db.session.add(comment)
             db.session.commit()
-            return redirect(url_for('post', post_id=post_id))
+            return redirect(url_for('post', post_id=post.id))
 
     post = Post.query.get_or_404(post_id)
     tags = post.tags
