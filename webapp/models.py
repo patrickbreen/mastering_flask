@@ -1,9 +1,11 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.mongoengine import MongoEngine
 from flask.ext.login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
 db = SQLAlchemy()
+mongo = MongoEngine()
 
 # User <-> Roles join_table
 roles = db.Table(

@@ -11,6 +11,7 @@ def create_app(object_name):
     app.config.from_object(object_name)
 
     db.init_app(app)
+    mongo.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
     return app
