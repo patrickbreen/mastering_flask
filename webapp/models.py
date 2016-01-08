@@ -1,55 +1,19 @@
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.mongoengine import MongoEngine
-from flask.ext.login import AnonymousUserMixin
+from flask.ext.login import AnanymousUserMixin
 
 from webapp.extensions import bcrypt
 
 db = SQLAlchemy()
-mongo = MongoEngine()
-
-# User <-> Roles join_table
-roles = db.Table(
-        'role_users',
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-        db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-        )
-
-# User Roles
-class Role(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
-
-    def __init__(self, name):
-        self.name = name
-
-    def __repr__(self):
-        return '<Role {}>'.format(self.name)
-
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    username = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(255))
     password = db.Column(db.String(255))
-
-    # relationships:
     posts = db.relationship(
         'Post',
         backref='user',
         lazy='dynamic'
     )
-
-    roles = db.relationship(
-            'Role',
-            secondary=roles,
-            backref=db.backref('users', lazy='dynamic')
-            )
-
-    def __init__(self, username):
-        self.username = username
-
-        default = Role.query.filter_by(name="default").one()
-        self.roles.append(default)
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password)
@@ -74,9 +38,9 @@ class User(db.Model):
             return False
 
     def get_id(self):
-        return str(self.id)
+        return unicode(self.id)
 
-# make intermediate join table for Tags <-> Posts
+# make intermediate join table
 tags = db.Table('post_tags',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
