@@ -1,5 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import AnanymousUserMixin
+from flask.ext.login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
