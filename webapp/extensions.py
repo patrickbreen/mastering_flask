@@ -1,5 +1,10 @@
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
+from flask.ext.restful import Api
+
+
+# rest API
+rest_api = Api()
 
 # bycrypt
 bcrypt = Bcrypt()
