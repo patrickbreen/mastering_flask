@@ -40,6 +40,7 @@ class User(db.Model):
     def get_id(self):
         return unicode(self.id)
 
+
 # make intermediate join table
 tags = db.Table('post_tags',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
