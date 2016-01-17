@@ -16,3 +16,9 @@ class DevConfig(Config):
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 
+    # Celery stuff
+    CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+    CELERY_BACKEND_URL = "amqp://guest:guest@localhost:5672//"
+
+
+

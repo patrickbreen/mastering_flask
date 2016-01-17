@@ -16,7 +16,7 @@ nested_tag_fields = {
         }
 
 post_fields = {
-        'author': fields.String(attribute= lambda x: x.user.username),
+        'username': fields.String(),
         'title': fields.String(),
         'text': fields.String(),
         'tags': fields.List(fields.Nested(nested_tag_fields)),

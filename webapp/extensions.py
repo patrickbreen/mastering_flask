@@ -1,6 +1,7 @@
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 from flask.ext.restful import Api
+from flask.ext.celery import Celery
 
 
 # rest API
@@ -22,3 +23,5 @@ def load_user(userid):
     return User.query.get(userid)
 
 
+# Celery
+celery = Celery()

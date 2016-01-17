@@ -15,17 +15,19 @@ def create_app(object_name):
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
-    rest_api.add_resource(PostApi,
-            '/api/post',
-            '/api/post/<int:post_id>',
-            endpoint='api')
-
-    rest_api.init_app(app)
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(blog_blueprint)
     return app
 
+# make a Dev app
 app = create_app(DevConfig)
-app.register_blueprint(main_blueprint)
-app.register_blueprint(blog_blueprint)
+rest_api.add_resource(PostApi,
+        '/api/post',
+        '/api/post/<int:post_id>',
+        endpoint='api')
+
+rest_api.init_app(app)
+
 
 if __name__ == '__main__':
     app.run()
