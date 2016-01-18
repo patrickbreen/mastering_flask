@@ -5,7 +5,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Server
 
 from webapp import app
-from webapp.models import db, User, Post, Tag, Comment
+from webapp.models import db, User, Post, Tag, Comment, Reminder
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -19,6 +19,7 @@ manager.add_command("db", MigrateCommand)
 def make_shell_context():
     return dict(app=app, db=db,
         User=User, Post=Post, Tag=Tag, Comment=Comment,
+        Reminder=Reminder,
         )
 
 @manager.command

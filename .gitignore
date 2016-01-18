@@ -3,3 +3,6 @@
 *__pycache__*
 venv/*
 database.db
+mail.py
+celerybeat-schedule
+celery_runner.py
