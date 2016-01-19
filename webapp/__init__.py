@@ -6,19 +6,21 @@ from webapp.config import DevConfig
 from webapp.models import db, Reminder
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.blog import blog_blueprint
-from webapp.extensions import bcrypt, login_manager, rest_api
+from webapp.extensions import (
+        bcrypt, login_manager, rest_api, debug_toolbar, cache
+        )
 from webapp.controllers.rest.post import PostApi
-from webapp.tasks import on_reminder_save
 
 def create_app(object_name):
     app = Flask(__name__)
     app.config.from_object(object_name)
 
     db.init_app(app)
-    event.listen(Reminder, 'after_insert', on_reminder_save)
 
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    debug_toolbar.init_app(app)
+    cache.init_app(app)
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(blog_blueprint)

@@ -40,22 +40,3 @@ def remind(self, pk):
     return
 
 
-def on_reminder_save(mapper, connect, self):
-    remind.apply_async(args=(self.id,), eta=self.date)
-
-@celery.task(
-        bind=True,
-        ignore_result=True,
-        default_retry_delay=3000,
-        max_retries=5)
-def digest(self, recipients):
-    # find the start and end of this week
-    text = render_template("digest.html")
-
-    email(email=email_addr,
-            password=password,
-            subject="your weekly digest",
-            text=text,
-            to=recipients)
-
-    return

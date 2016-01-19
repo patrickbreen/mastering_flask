@@ -2,6 +2,8 @@ from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 from flask.ext.restful import Api
 from flask.ext.celery import Celery
+from flask.ext.debugtoolbar import DebugToolbarExtension
+from flask.ext.cache import Cache
 
 
 # rest API
@@ -25,3 +27,9 @@ def load_user(userid):
 
 # Celery
 celery = Celery()
+
+# DebugToolbar
+debug_toolbar = DebugToolbarExtension()
+
+# Cache
+cache = Cache()

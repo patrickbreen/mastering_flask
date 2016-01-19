@@ -6,6 +6,7 @@ from flask.ext.login import login_required
 
 from webapp.models import db, Post, Tag, Comment, User, Tag, tags
 from webapp.forms import CommentForm, PostForm
+from webapp.extensions import cache
 
 blog_blueprint = Blueprint(
         'blog',
@@ -14,6 +15,7 @@ blog_blueprint = Blueprint(
         url_prefix='/blog'
         )
 
+@cache.cached(timeout=600, key_prefix='sidebad_data')
 def sidebar_data():
     recent = Post.query.order_by(
         Post.publish_date.desc()).limit(5).all()
@@ -70,6 +72,7 @@ def edit_post(id):
 
 @blog_blueprint.route('/')
 @blog_blueprint.route('/<int:page>')
+@cache.cached(timeout=60)
 def home(page=1):
     posts = Post.query.order_by(
         Post.publish_date.desc()
