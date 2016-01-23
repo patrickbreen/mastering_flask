@@ -1,44 +1,36 @@
 import random
 import datetime
 
-from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Server
 from flask.ext.script.commands import ShowUrls, Clean
 
-from webapp import app
-from webapp.models import db, User, Post, Tag, Comment, Reminder
+from webapp import dev_app
+from webapp.models import db,  User, Post, Tag, Comment, Reminder
 
-db.init_app(app)
-migrate = Migrate(app, db)
+db.init_app(dev_app)
 
-manager = Manager(app)
+manager = Manager(dev_app)
 manager.add_command("server", Server())
-manager.add_command("db", MigrateCommand)
 manager.add_command("show-urls", ShowUrls())
 manager.add_command("clean", Clean())
 
 
 @manager.shell
 def make_shell_context():
-    return dict(app=app, db=db,
+    return dict(dev_app=dev_app, db=db,
         User=User, Post=Post, Tag=Tag, Comment=Comment,
         Reminder=Reminder,
         )
 
 @manager.command
-def create_db():
-    "create the database if it doesn't already exist"
-    db.create_all()
+def test():
+    pass
 
 @manager.command
-def populate():
-    "populate with default data"
-
-    # populate roles
-    db.session.add(Role('admin'))
-    db.session.add(Role('poster'))
-    db.session.add(Role('default'))
-    db.session.commit()
+def init_db():
+    "create and populate db with default dev data"
+    db.drop_all()
+    db.create_all()
 
     user = User()
     user.username = 'jim'

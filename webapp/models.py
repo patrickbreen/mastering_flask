@@ -1,5 +1,4 @@
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
@@ -21,21 +20,6 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password,
                 password)
-
-    def is_authenticated(self):
-        if isinstance(self, AnonymousUserMixin):
-            return False
-        else:
-            return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        if isinstance(self, AnonymousUserMixin):
-            return True
-        else:
-            return False
 
     def get_id(self):
         return unicode(self.id)

@@ -1,13 +1,11 @@
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
-from flask.ext.restful import Api
 from flask.ext.celery import Celery
 from flask.ext.debugtoolbar import DebugToolbarExtension
 from flask.ext.cache import Cache
 
 
-# rest API
-rest_api = Api()
+
 
 # bycrypt
 bcrypt = Bcrypt()

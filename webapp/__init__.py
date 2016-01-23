@@ -1,13 +1,14 @@
 from flask import Flask, redirect, url_for
+from flask.ext.restful import Api
 
 from sqlalchemy import event
 
-from webapp.config import DevConfig
+from webapp.config import DevConfig, TestConfig
 from webapp.models import db, Reminder
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.blog import blog_blueprint
 from webapp.extensions import (
-        bcrypt, login_manager, rest_api, debug_toolbar, cache
+        bcrypt, login_manager, debug_toolbar, cache
         )
 from webapp.controllers.rest.post import PostApi
 
@@ -22,19 +23,18 @@ def create_app(object_name):
     debug_toolbar.init_app(app)
     cache.init_app(app)
 
+    rest_api = Api(app)
+    rest_api.add_resource(PostApi,
+            '/restapi/post',
+            '/restapi/post/<int:post_id>',
+            endpoint='restapi')
+
     app.register_blueprint(main_blueprint)
     app.register_blueprint(blog_blueprint)
     return app
 
-# make a Dev app
-app = create_app(DevConfig)
-rest_api.add_resource(PostApi,
-        '/api/post',
-        '/api/post/<int:post_id>',
-        endpoint='api')
+# make a dev app
+dev_app = create_app(DevConfig)
 
-rest_api.init_app(app)
-
-
-if __name__ == '__main__':
-    app.run()
+# make a test app
+test_app = create_app(TestConfig)

@@ -12,7 +12,20 @@ class ProdConfig(Config):
 
 class DevConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../dev_database.db'
+    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+
+    # Celery stuff
+    CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+    CELERY_BACKEND_URL = "amqp://guest:guest@localhost:5672//"
+
+    # Cache stuff
+    CACHE_TYPE = 'simple'
+
+class TestConfig(DevConfig):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../test_database.db'
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 

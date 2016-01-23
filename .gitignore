@@ -2,7 +2,7 @@
 */.*
 *__pycache__*
 venv/*
-database.db
+*.db
 mail.py
 celerybeat-schedule
 celery_runner.py
