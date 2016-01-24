@@ -23,10 +23,6 @@ def make_shell_context():
         )
 
 @manager.command
-def test():
-    pass
-
-@manager.command
 def init_db():
     "create and populate db with default dev data"
     db.drop_all()
