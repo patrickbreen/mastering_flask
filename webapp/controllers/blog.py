@@ -15,7 +15,7 @@ blog_blueprint = Blueprint(
         url_prefix='/blog'
         )
 
-@cache.cached(timeout=600, key_prefix='sidebad_data')
+@cache.cached(timeout=600, key_prefix='sidebar_data')
 def sidebar_data():
     recent = Post.query.order_by(
         Post.publish_date.desc()).limit(5).all()

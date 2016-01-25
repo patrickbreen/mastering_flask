@@ -25,7 +25,10 @@ def make_shell_context():
 @manager.command
 def init_db():
     "create and populate db with default dev data"
-    db.drop_all()
+    populate_default_data(db, dev_app)
+
+def populate_default_data(db, app):
+    db.app = app
     db.create_all()
 
     user = User()
@@ -51,6 +54,7 @@ def init_db():
         db.session.add(new_post)
 
     db.session.commit()
+
 
 if __name__ == '__main__':
     manager.run()

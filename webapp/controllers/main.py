@@ -31,7 +31,7 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).one()
+        user = User.query.filter_by(username=form.username.data).first()
         login_user(user, remember=form.remember.data)
 
     recent, top_tags = sidebar_data()
